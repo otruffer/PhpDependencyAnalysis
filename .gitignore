@@ -4,3 +4,8 @@ vendor
 vendor/*
 tmp
 tmp/*
+.idea
+.idea/
+dictoChecker/.idea
+dictoChecker/.idea/
+dictoChecker/.idea/*
