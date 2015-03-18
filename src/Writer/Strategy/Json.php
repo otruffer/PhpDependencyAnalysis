@@ -63,9 +63,12 @@ class Json implements StrategyInterface
         foreach ($vertices as $from) {
             /** @var \Fhaculty\Graph\Vertex $from */
             $toVertices = $from->getVerticesEdgeTo();
+
             foreach ($toVertices->getVerticesDistinct() as $to) {
                 /** @var \Fhaculty\Graph\Vertex $to */
                 $this->addArrayEdge($vertexToVertices, $from->getId(), $to->getId());
+                /** this is done so that we may have all the nodes in the graph. Maybe $to has no outgoing dependencies, then we want it to be displayed to have no dependencies. */
+                $this->addEmptyNode($vertexToVertices, $to->getId());
             }
         }
 
@@ -84,5 +87,15 @@ class Json implements StrategyInterface
         } else {
             $array[$from] = array($to);
         }
+    }
+
+    /**
+     * @param $array
+     * @param $node
+     */
+    protected function addEmptyNode(&$array, $node) {
+        if(array_key_exists($node, $array))
+            return;
+        $array[$node] = array();
     }
 }
