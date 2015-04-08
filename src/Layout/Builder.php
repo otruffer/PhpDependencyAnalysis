@@ -139,7 +139,7 @@ class Builder implements BuilderInterface
     public function create()
     {
         $this->createDependencies();
-        $this->detectCycles();
+//        $this->detectCycles();
         $this->bindLayoutTo($this->getGraph(), $this->layout->getGraph(), 'graphviz.graph.');
         $this->getGraph()->setAttribute('graphviz.groups', $this->groupGenerator->getGroups());
         $this->getGraph()->setAttribute('graphviz.groupLayout', $this->layout->getGroup());

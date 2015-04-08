@@ -33,7 +33,6 @@ class Json implements StrategyInterface
 {
     /** @var ExtractionInterface */
     private $extractor;
-
     /**
      * @param ExtractionInterface $extractor
      */
@@ -43,27 +42,11 @@ class Json implements StrategyInterface
     }
 
     /**
-     * @param $graph
      * @return ExtractionInterface
      */
-    public function extract($graph)
+
+    public function getExtractor()
     {
-
-        $vertexToVertices = array();
-
-        $vertices = $graph->getVertices();
-        foreach ($vertices as $from) {
-            /** @var \Fhaculty\Graph\Vertex $from */
-            $toVertices = $from->getVerticesEdgeTo();
-
-            foreach ($toVertices->getVerticesDistinct() as $to) {
-                /** @var \Fhaculty\Graph\Vertex $to */
-                $this->addArrayEdge($vertexToVertices, $from->getId(), $to->getId());
-                /** this is done so that we may have all the nodes in the graph. Maybe $to has no outgoing dependencies, then we want it to be displayed to have no dependencies. */
-                $this->addEmptyNode($vertexToVertices, $to->getId());
-            }
-        }
-
         if (!$this->extractor instanceof ExtractionInterface) {
             $this->extractor = new GraphExtractor;
         }
@@ -73,22 +56,12 @@ class Json implements StrategyInterface
 
     public function filter(Graph $graph)
     {
-        $data = $this->extract($graph);
 
+        $data = $this->getExtractor()->extract($graph);
         if ($json = json_encode($data)) {
             return $json;
         }
 
         throw new \RuntimeException('Cannot create JSON');
-    }
-
-    /**
-     * @param $array
-     * @param $node
-     */
-    protected function addEmptyNode(&$array, $node) {
-        if(array_key_exists($node, $array))
-            return;
-        $array[$node] = array();
     }
 }
