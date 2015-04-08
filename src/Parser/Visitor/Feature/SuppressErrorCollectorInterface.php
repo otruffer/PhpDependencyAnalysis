@@ -25,6 +25,6 @@
 
 namespace PhpDA\Parser\Visitor\Feature;
 
-interface SuppressCollectorInterface
+interface SuppressErrorCollectorInterface
 {
 }

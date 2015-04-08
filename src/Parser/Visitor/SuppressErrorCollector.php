@@ -26,6 +26,8 @@
 namespace PhpDA\Parser\Visitor;
 
 use PhpParser\Node;
+use PhpDA\Parser\Visitor\Feature\SuppressErrorCollectorInterface;
+
 
 class SuppressErrorCollector extends AbstractVisitor implements SuppressErrorCollectorInterface
 {
