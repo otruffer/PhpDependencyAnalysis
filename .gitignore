@@ -4,3 +4,4 @@ vendor
 vendor/*
 tmp
 tmp/*
+.idea
