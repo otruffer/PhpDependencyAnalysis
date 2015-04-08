@@ -25,10 +25,9 @@
 
 namespace PhpDA\Parser\Visitor;
 
-use PhpDA\Parser\Visitor\Feature\SuppressCollectorInterface;
 use PhpParser\Node;
 
-class SuppressErrorCollector extends AbstractVisitor implements SuppressCollectorInterface
+class SuppressErrorCollector extends AbstractVisitor implements SuppressErrorCollectorInterface
 {
     public function leaveNode(Node $node)
     {
