@@ -27,7 +27,7 @@ namespace PhpDA\Writer\Strategy;
 
 use Fhaculty\Graph\Graph;
 use PhpDA\Writer\Extractor\ExtractionInterface;
-use PhpDA\Writer\Extractor\Graph as GraphExtractor;
+use PhpDA\Writer\Extractor\DictoGraph as GraphExtractor;
 
 class Json implements StrategyInterface
 {
