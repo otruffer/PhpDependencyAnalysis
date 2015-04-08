@@ -26,14 +26,14 @@
 namespace PhpDA\Parser\Visitor;
 
 use PhpParser\Node;
-use PhpDA\Parser\Visitor\Feature\SuppressErrorCollectorInterface;
+use PhpDA\Parser\Visitor\Feature\UnsupportedNamespaceCollectorInterface;
 
 
-class SuppressErrorCollector extends AbstractVisitor implements SuppressErrorCollectorInterface
+class SuppressErrorCollector extends AbstractVisitor implements UnsupportedNamespaceCollectorInterface
 {
     public function leaveNode(Node $node)
     {
-        if ($node instanceof Node\Expr\Exit_) {
+        if ($node instanceof Node\Expr\ErrorSuppress) {
             $name = new Node\Name('@');
             $this->collect($name, $node);
         }

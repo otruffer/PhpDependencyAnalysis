@@ -25,10 +25,10 @@
 
 namespace PhpDA\Parser\Visitor;
 
-use PhpDA\Parser\Visitor\Feature\EvalCollectorInterface;
+use PhpDA\Parser\Visitor\Feature\UnsupportedNamespaceCollectorInterface;
 use PhpParser\Node;
 
-class EvalCollector extends AbstractVisitor implements EvalCollectorInterface
+class EvalCollector extends AbstractVisitor implements UnsupportedNamespaceCollectorInterface
 {
     public function leaveNode(Node $node)
     {
