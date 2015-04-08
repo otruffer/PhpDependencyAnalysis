@@ -71,9 +71,10 @@ class DictoGraph implements ExtractionInterface
         }
 
         if(!in_array($to, $this->data['edges'][$from])) {
-            if(!array_key_exists($from, $this->data['edges'][$from][$to])){
+            if(!array_key_exists($to, $this->data['edges'][$from])){
                $this->data['edges'][$from][$to] = $this->extractEdge($edge);
             } else {
+                echo "merging for: ";
                 $this->data['edges'][$from][$to] = array_merge($this->data['edges'][$from][$to], $this->extractEdge($edge));
             }
         }
