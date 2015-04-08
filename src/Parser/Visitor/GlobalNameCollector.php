@@ -34,9 +34,9 @@ class GlobalNameCollector extends AbstractVisitor implements UnsupportedNamespac
     {
         if ($node instanceof Node\Stmt\Global_) {
             /** Variable[] */
-            $vars = $node->__get('vars');
+            $vars = $node->vars;
             /** \PhpParser\Node\Expr\Variable **/
-            $name = $vars[0]->__get('name');
+            $name = $vars[0]->name;
             $name = new Node\Name('GLOBAL\\' . $name);
             $this->collect($name, $node);
         }
