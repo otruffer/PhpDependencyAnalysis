@@ -2,7 +2,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Marco Muths
+ * Copyright (c) 2015 Marco Muths
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,60 +29,78 @@ abstract class AbstractLayout implements LayoutInterface
 {
     /** @var array */
     private $graph = array(
-        'rankdir' => 'LR',
-        'ranksep' => 1,
-        'nodesep' => 0.1,
-        'label'   => 'PhpDependencyAnalyse by Marco Muths',
+        'rankdir'  => 'LR',
+        'ranksep'  => 1,
+        'nodesep'  => 0.1,
+        'fontsize' => 8,
     );
 
     /** @var array */
     private $group = array(
         'style'     => 'rounded,filled',
-        'fontcolor' => '#888888',
-        'fontsize'  => 16,
+        'fontcolor' => '#000033',
+        'fontsize'  => 14,
         'labeljust' => 'l',
-        'color'     => '#888888',
-        'fillcolor' => 'lightgrey',
+        'color'     => '#000033',
+        'fillcolor' => '#CCCCFF',
     );
 
     /** @var array */
     private $vertex = array(
-        'fillcolor' => '#eeeeee',
+        'fillcolor' => '#9999CC',
         'style'     => 'filled,rounded',
         'shape'     => 'box',
-        'fontcolor' => '#314B5F',
+        'fontcolor' => '#000033',
         'fontsize'  => 10,
-        'margin'    => 0,
     );
 
     /** @var array */
     private $vertexUnsupported = array(
-        'fillcolor' => '#ECB4B4',
+        'fillcolor' => '#FF9999',
     );
 
     /** @var array */
     private $vertexNamespacedString = array(
-        'fillcolor' => '#F1EEA6',
+        'fillcolor' => '#FFCC66',
     );
 
     /** @var array */
     private $edge = array(
         'arrowsize' => 0.6,
-        'fontcolor' => '#767676',
+        'fontcolor' => '#999999',
         'fontsize'  => 8,
-        'color'     => '#1A2833',
+        'color'     => '#999999',
         'weight'    => 1.2,
     );
 
     /** @var array */
+    private $edgeInvalid = array(
+        'color'     => '#FF0000',
+        'style'     => 'bold',
+        'arrowsize' => 0.8,
+    );
+
+    /** @var array */
+    private $edgeCycle = array(
+        'color'     => '#FF0099',
+        'style'     => 'bold',
+        'arrowsize' => 0.8,
+    );
+
+    /** @var array */
     private $edgeUnsupported = array(
-        'color' => '#ECB4B4',
+        'color' => '#FF9999',
     );
 
     /** @var array */
     private $edgeNamespacedString = array(
-        'color' => '#F1EEA6',
+        'color' => '#FFCC66',
     );
+
+    public function __construct($label)
+    {
+        $this->graph['label'] = $label;
+    }
 
     public function getGraph()
     {
@@ -97,6 +115,16 @@ abstract class AbstractLayout implements LayoutInterface
     public function getEdge()
     {
         return $this->edge;
+    }
+
+    public function getEdgeInvalid()
+    {
+        return $this->edgeInvalid;
+    }
+
+    public function getEdgeCycle()
+    {
+        return $this->edgeCycle;
     }
 
     public function getEdgeExtend()

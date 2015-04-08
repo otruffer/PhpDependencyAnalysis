@@ -2,7 +2,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Marco Muths
+ * Copyright (c) 2015 Marco Muths
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -51,18 +51,18 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
 
     public function testGetPluginWithClassConstructorWithoutParams()
     {
-        $fqn = 'PhpDATest\Plugin\Stub\Constructer';
-        $plugin = $this->fixture->get($fqn);
+        $fqcn = 'PhpDATest\Plugin\Stub\Constructer';
+        $plugin = $this->fixture->get($fqcn);
 
-        $this->assertInstanceOf($fqn, $plugin);
+        $this->assertInstanceOf($fqcn, $plugin);
     }
 
     public function testGetPluginWithoutConstructor()
     {
-        $fqn = 'PhpDATest\Plugin\Stub\WithoutConstructer';
-        $plugin = $this->fixture->get($fqn);
+        $fqcn = 'PhpDATest\Plugin\Stub\WithoutConstructer';
+        $plugin = $this->fixture->get($fqcn);
 
-        $this->assertInstanceOf($fqn, $plugin);
+        $this->assertInstanceOf($fqcn, $plugin);
     }
 
     public function testGetPluginWithFactory()

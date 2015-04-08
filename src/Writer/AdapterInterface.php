@@ -2,7 +2,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Marco Muths
+ * Copyright (c) 2015 Marco Muths
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,21 +25,21 @@
 
 namespace PhpDA\Writer;
 
-use PhpDA\Entity\AnalysisCollection;
+use Fhaculty\Graph\Graph;
 
 interface AdapterInterface
 {
     /**
-     * @param AnalysisCollection $analysisCollection
+     * @param Graph $graph
      * @return AdapterInterface
      */
-    public function write(AnalysisCollection $analysisCollection);
+    public function write(Graph $graph);
 
     /**
-     * @param string $fqn
+     * @param string $fqcn
      * @return AdapterInterface
      */
-    public function with($fqn);
+    public function with($fqcn);
 
     /**
      * @param string $file

@@ -2,7 +2,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Marco Muths
+ * Copyright (c) 2015 Marco Muths
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -64,6 +64,9 @@ class Config
 
     /** @var array */
     private $visitorOptions = array();
+
+    /** @var string|null */
+    private $referenceValidator;
 
     /**
      * @param array $config
@@ -213,5 +216,18 @@ class Config
         }
 
         return (int) $this->groupLength;
+    }
+
+    /**
+     * @return string|null
+     * @throws \InvalidArgumentException
+     */
+    public function getReferenceValidator()
+    {
+        if (!is_null($this->referenceValidator) && !is_string($this->referenceValidator)) {
+            throw new \InvalidArgumentException('Config for referenceValidator must be an string');
+        }
+
+        return $this->referenceValidator;
     }
 }

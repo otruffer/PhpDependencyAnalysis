@@ -2,7 +2,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Marco Muths
+ * Copyright (c) 2015 Marco Muths
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -149,5 +149,20 @@ class MetaTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($name1, $namespaces['1']);
         $this->assertSame($name2, $namespaces['2']);
         $this->assertSame($name3, $namespaces['3']);
+    }
+
+    public function testArrayRepresentation()
+    {
+        $this->assertSame(
+            array(
+                'type'                  => '',
+                'implementedNamespaces' => array(),
+                'extendedNamespaces'    => array(),
+                'usedTraitNamespaces'   => array(),
+                'isAbstract'            => false,
+                'isFinal'               => false,
+            ),
+            $this->fixture->toArray()
+        );
     }
 }

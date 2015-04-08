@@ -2,7 +2,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Marco Muths
+ * Copyright (c) 2015 Marco Muths
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -38,33 +38,70 @@ class Loader implements LoaderInterface, LoggerAwareInterface
         $this->logger = $logger;
     }
 
-    public function get($fqn, array $options = null)
+    public function get($fqcn, array $options = null)
     {
-        if (!class_exists($fqn)) {
-            throw new \RuntimeException(sprintf('Class for \'%s\' does not exist', $fqn));
-        }
+        $this->validateClassExistence($fqcn);
+        $this->validateConstructorArgumentExistence($fqcn);
 
-        $class = new \ReflectionClass($fqn);
-        if ($constructor = $class->getConstructor()) {
-            if ($constructor->getNumberOfParameters()) {
-                throw new \RuntimeException(sprintf('Class \'%s\' must be creatable without arguments', $fqn));
-            }
-        }
-
-        $plugin = new $fqn;
+        $plugin = new $fqcn;
 
         if ($plugin instanceof FactoryInterface) {
             $plugin = $plugin->create();
         }
 
-        if ($this->logger && $plugin instanceof LoggerAwareInterface) {
-            $plugin->setLogger($this->logger);
-        }
+        $this->tryLoggerBinding($plugin);
 
-        if ($options && $plugin instanceof ConfigurableInterface) {
-            $plugin->setOptions($options);
+        if (is_array($options)) {
+            $this->tryConfigWith($options, $plugin);
         }
 
         return $plugin;
+    }
+
+    /**
+     * @param string $fqcn
+     * @throws \RuntimeException
+     */
+    private function validateClassExistence($fqcn)
+    {
+        if (!class_exists($fqcn)) {
+            throw new \RuntimeException(sprintf('Class for \'%s\' does not exist', $fqcn));
+        }
+    }
+
+    /**
+     * @param string $fqcn
+     * @throws \RuntimeException
+     */
+    private function validateConstructorArgumentExistence($fqcn)
+    {
+        $class = new \ReflectionClass($fqcn);
+
+        if ($constructor = $class->getConstructor()) {
+            if ($constructor->getNumberOfParameters()) {
+                throw new \RuntimeException(sprintf('Class \'%s\' must be creatable without arguments', $fqcn));
+            }
+        }
+    }
+
+    /**
+     * @param object $plugin
+     */
+    private function tryLoggerBinding($plugin)
+    {
+        if ($this->logger && $plugin instanceof LoggerAwareInterface) {
+            $plugin->setLogger($this->logger);
+        }
+    }
+
+    /**
+     * @param array  $options
+     * @param object $plugin
+     */
+    private function tryConfigWith(array $options, $plugin)
+    {
+        if ($plugin instanceof ConfigurableInterface) {
+            $plugin->setOptions($options);
+        }
     }
 }

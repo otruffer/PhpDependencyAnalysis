@@ -2,7 +2,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Marco Muths
+ * Copyright (c) 2015 Marco Muths
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -45,7 +45,7 @@ class AdapterTest extends \PHPUnit_Framework_TestCase
         $this->fixture = new Adapter($this->loader);
     }
 
-    public function tearDown()
+    protected function tearDown()
     {
         if (file_exists($this->file)) {
             unlink($this->file);
@@ -56,24 +56,24 @@ class AdapterTest extends \PHPUnit_Framework_TestCase
     {
         $this->setExpectedException('RuntimeException');
 
-        $writerFqn = 'foo';
-        $analysisCollection = \Mockery::mock('PhpDA\Entity\AnalysisCollection');
+        $writerFqcn = 'foo';
+        $graph = \Mockery::mock('Fhaculty\Graph\Graph');
         $writer = \Mockery::mock('PhpDA\Writer\Strategy\LoaderInterface');
-        $this->loader->shouldReceive('get')->with($writerFqn)->once()->andReturn($writer);
+        $this->loader->shouldReceive('get')->with($writerFqcn)->once()->andReturn($writer);
 
-        $this->fixture->write($analysisCollection)->with($writerFqn)->to($this->file);
+        $this->fixture->write($graph)->with($writerFqcn)->to($this->file);
     }
 
     public function testWriteWithFluentInterface()
     {
-        $writerFqn = 'foo';
+        $writerFqcn = 'foo';
         $content = 'bar';
-        $analysisCollection = \Mockery::mock('PhpDA\Entity\AnalysisCollection');
+        $graph = \Mockery::mock('Fhaculty\Graph\Graph');
         $writer = \Mockery::mock('PhpDA\Writer\Strategy\StrategyInterface');
-        $writer->shouldReceive('filter')->once()->with($analysisCollection)->andReturn($content);
-        $this->loader->shouldReceive('get')->with($writerFqn)->once()->andReturn($writer);
+        $writer->shouldReceive('filter')->once()->with($graph)->andReturn($content);
+        $this->loader->shouldReceive('get')->with($writerFqcn)->once()->andReturn($writer);
 
-        $this->fixture->write($analysisCollection)->with($writerFqn)->to($this->file);
+        $this->fixture->write($graph)->with($writerFqcn)->to($this->file);
         $this->assertSame($content, file_get_contents($this->file));
     }
 }

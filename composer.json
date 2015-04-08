@@ -1,14 +1,16 @@
 {
     "name"             : "mamuz/php-dependency-analysis",
-    "type"             : "library",
-    "description"      : "Static code analysis for php projects to provide a dependency graph based on namespaces",
+    "type"             : "project",
+    "description"      : "Static code analysis to provide and verify a dependency graph against a defined architecture",
     "homepage"         : "https://github.com/mamuz/PhpDependencyAnalysis",
     "license"          : "MIT",
-    "keywords"         : ["code", "php", "dependency", "analysis", "graph", "namespace"],
+    "keywords"         : [
+        "code", "php", "dependency", "analysis", "graph", "namespace", "cycles", "reference", "architecture"
+    ],
     "authors"          : [
         {
             "name" : "Marco Muths",
-            "email": "muzzi_is@web.de"
+            "email": "mamuz.de@gmail.com"
         }
     ],
     "support"          : {
@@ -20,16 +22,19 @@
     "require"          : {
         "php"                              : ">=5.3.3",
         "psr/log"                          : "1.0.*",
-        "nikic/php-parser"                 : "1.0.*",
-        "clue/graph"                       : "0.7.*",
+        "nikic/php-parser"                 : "1.2.*",
+        "clue/graph"                       : "0.9.*",
+        "graphp/algorithms"                : "0.8.*",
+        "graphp/graphviz"                  : "0.2.*",
         "phpdocumentor/reflection-docblock": "2.0.*",
-        "symfony/yaml"                     : "2.5.*",
-        "symfony/console"                  : "2.5.*",
-        "symfony/finder"                   : "2.5.*"
+        "doctrine/collections"             : "1.2.*",
+        "symfony/yaml"                     : "2.6.*",
+        "symfony/console"                  : "2.6.*",
+        "symfony/finder"                   : "2.6.*"
     },
     "require-dev"      : {
         "satooshi/php-coveralls": "0.6.*",
-        "phpunit/phpunit"       : "4.3.*",
+        "phpunit/phpunit"       : "4.5.*",
         "mockery/mockery"       : "0.9.*"
     },
     "autoload"         : {

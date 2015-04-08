@@ -2,7 +2,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Marco Muths
+ * Copyright (c) 2015 Marco Muths
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -83,7 +83,8 @@ class TagCollector extends AbstractVisitor implements UsedNamespaceCollectorInte
             $tags = $node->getAttribute(NameResolver::TAG_NAMES_ATTRIBUTE);
             foreach ($tags as $tagName) {
                 $name = new Node\Name($tagName);
-                $this->collect($name);
+                $name->setAttribute('isComment', true);
+                $this->collect($name, $node);
             }
         }
     }

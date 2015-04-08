@@ -2,7 +2,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Marco Muths
+ * Copyright (c) 2015 Marco Muths
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -34,12 +34,14 @@ class AggregationTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->fixture = new Aggregation;
+        $this->fixture = new Aggregation('foo');
     }
 
     public function testAccessGraph()
     {
-        $this->assertNotEmpty($this->fixture->getGraph());
+        $data = $this->fixture->getGraph();
+        $this->assertNotEmpty($data);
+        $this->assertSame('foo', $data['label']);
     }
 
     public function testAccessGroup()
@@ -90,5 +92,15 @@ class AggregationTest extends \PHPUnit_Framework_TestCase
     public function testAccessVertexUnsupported()
     {
         $this->assertNotEmpty($this->fixture->getVertexUnsupported());
+    }
+
+    public function testAccessEdgeInvalid()
+    {
+        $this->assertNotEmpty($this->fixture->getEdgeInvalid());
+    }
+
+    public function testAccessEdgeCycle()
+    {
+        $this->assertNotEmpty($this->fixture->getEdgeCycle());
     }
 }

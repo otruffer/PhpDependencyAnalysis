@@ -2,7 +2,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Marco Muths
+ * Copyright (c) 2015 Marco Muths
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -45,7 +45,7 @@ interface MessageInterface
 
     const OPTION_IGNORE = 'Exclude directories from source for analysis.';
 
-    const OPTION_FORMATTER = 'Formatter as FQN for creating dependency graph.';
+    const OPTION_FORMATTER = 'Formatter as FQCN for creating dependency graph.';
 
     const OPTION_TARGET = 'Filepath for writing created dependency graph.';
 

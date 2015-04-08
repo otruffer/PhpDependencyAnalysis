@@ -2,7 +2,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Marco Muths
+ * Copyright (c) 2015 Marco Muths
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -55,6 +55,7 @@ class NodeNameTest extends \PHPUnit_Framework_TestCase
         if (!is_null($nodeName)) {
             $nodeName = $nodeName->toString();
         }
+
         $this->assertSame($this->expected, $nodeName);
     }
 
@@ -65,8 +66,9 @@ class NodeNameTest extends \PHPUnit_Framework_TestCase
 
     public function testUnFiltered()
     {
-        $string = $this->expected = '\Foo\Bar';
-        $this->entity->shouldReceive('toString')->andReturn($string);
+        $this->expected = '\Foo\Bar';
+        $this->entity->parts = explode('\\', $this->expected);
+        $this->entity->shouldReceive('toString')->andReturn($this->expected);
         $this->assertNamespaceFilter();
     }
 
@@ -151,6 +153,7 @@ class NodeNameTest extends \PHPUnit_Framework_TestCase
 
         $string = $this->expected = 'Bar';
         $this->createEntityMock();
+        $this->entity->parts = explode('\\', $this->expected);
         $this->entity->shouldReceive('toString')->andReturn($string);
         $this->assertNamespaceFilter();
     }
@@ -183,6 +186,17 @@ class NodeNameTest extends \PHPUnit_Framework_TestCase
 
         $string = 'Foo\Bar\Baz';
         $this->expected = 'Bar\Baz';
+        $this->entity->parts = explode('\\', $string);
+        $this->entity->shouldReceive('toString')->andReturn($string);
+        $this->assertNamespaceFilter();
+    }
+
+    public function testSlicingToNull()
+    {
+        $this->fixture->setOptions(array('sliceLength' => 2, 'sliceOffset' => 1));
+
+        $string = '';
+        $this->expected = null;
         $this->entity->parts = explode('\\', $string);
         $this->entity->shouldReceive('toString')->andReturn($string);
         $this->assertNamespaceFilter();

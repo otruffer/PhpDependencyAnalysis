@@ -2,7 +2,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Marco Muths
+ * Copyright (c) 2015 Marco Muths
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,10 +25,12 @@
 
 namespace PhpDA\Writer\Strategy;
 
-class Script extends AbstractStrategy
+use Fhaculty\Graph\Graph;
+
+class Script extends AbstractGraphViz
 {
-    protected function createOutput()
+    protected function toString(Graph $graph)
     {
-        return $this->getGraphViz()->createScript();
+        return $this->getGraphViz()->createScript($graph);
     }
 }

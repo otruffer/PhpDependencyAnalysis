@@ -2,7 +2,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Marco Muths
+ * Copyright (c) 2015 Marco Muths
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -45,25 +45,27 @@ class Analyzer implements AnalyzerInterface
     /** @var Logger */
     private $logger;
 
+    /** @var AnalysisCollection */
+    private $collection;
+
     /**
      * @param ParserAbstract     $parser
      * @param AdtTraverser       $adtTraverser
      * @param NodeTraverser      $nodeTraverser
-     * @param AnalysisCollection $collection
      * @param Logger             $logger
      */
     public function __construct(
         ParserAbstract $parser,
         AdtTraverser $adtTraverser,
         NodeTraverser $nodeTraverser,
-        AnalysisCollection $collection,
         Logger $logger
     ) {
         $this->parser = $parser;
         $this->adtTraverser = $adtTraverser;
         $this->nodeTraverser = $nodeTraverser;
-        $this->collection = $collection;
         $this->logger = $logger;
+
+        $this->collection = new AnalysisCollection;
     }
 
     public function getNodeTraverser()

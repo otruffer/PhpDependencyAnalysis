@@ -2,7 +2,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Marco Muths
+ * Copyright (c) 2015 Marco Muths
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,15 +25,15 @@
 
 namespace PhpDA\Layout;
 
-use Fhaculty\Graph\GraphViz as FhacultyGraphViz;
+use Graphp\GraphViz\GraphViz as BaseGraphViz;
 
-class GraphViz extends FhacultyGraphViz
+class GraphViz extends BaseGraphViz
 {
     /** @var array */
     private static $groups = array();
 
     /** @var array */
-    private static $groupsLayout = array();
+    private static $groupLayout = array();
 
     /**
      * @param array $groups
@@ -48,7 +48,7 @@ class GraphViz extends FhacultyGraphViz
      */
     public function setGroupLayout(array $layout)
     {
-        self::$groupsLayout = $layout;
+        self::$groupLayout = $layout;
     }
 
     public static function escape($id)
@@ -65,10 +65,10 @@ class GraphViz extends FhacultyGraphViz
     /**
      * @return string
      */
-    public static function getGroupLayoutScript()
+    private static function getGroupLayoutScript()
     {
         $script = '';
-        foreach (self::$groupsLayout as $attr => $val) {
+        foreach (self::$groupLayout as $attr => $val) {
             $script .= self::EOL . $attr . '=' . parent::escape($val) . ';';
         }
 

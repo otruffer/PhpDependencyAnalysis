@@ -2,7 +2,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Marco Muths
+ * Copyright (c) 2015 Marco Muths
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -58,7 +58,6 @@ class UnsupportedFuncCollectorTest extends \PHPUnit_Framework_TestCase
     {
         $node = \Mockery::mock('PhpParser\Node\Expr\FuncCall');
         $name = \Mockery::mock('PhpParser\Node');
-        $name->shouldReceive('toString')->andReturn('foo');
         $node->name = $name;
         $this->fixture->leaveNode($node);
     }
@@ -123,11 +122,10 @@ class UnsupportedFuncCollectorTest extends \PHPUnit_Framework_TestCase
             }
         );
         $this->adt->shouldReceive('addUnsupportedStmt')->once()->andReturnUsing(
-            function ($object) use ($testcase, $attributes, $funcName) {
+            function ($object) use ($testcase, $funcName) {
                 /** @var \PhpParser\Node\Name $object */
                 $testcase->assertInstanceOf('PhpParser\Node\Name', $object);
                 $testcase->assertSame($object->toString(), $funcName);
-                $testcase->assertSame($object->getAttributes(), $attributes);
             }
         );
 

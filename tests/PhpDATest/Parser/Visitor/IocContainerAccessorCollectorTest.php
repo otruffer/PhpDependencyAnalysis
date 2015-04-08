@@ -2,7 +2,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Marco Muths
+ * Copyright (c) 2015 Marco Muths
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -81,7 +81,7 @@ class IocContainerAccessorCollectorTest extends \PHPUnit_Framework_TestCase
 
     public function testNotCollectingByMatchingMethodWithInvalidArgumentValue()
     {
-        $value = \Mockery::mock('PhpParser\Node\Scalar\String');
+        $value = \Mockery::mock('PhpParser\Node\Scalar\String_');
         $value->value = 123;
         $node = \Mockery::mock('PhpParser\Node\Expr\MethodCall');
         $arg = \Mockery::mock('PhpParser\Node\Arg');
@@ -93,7 +93,7 @@ class IocContainerAccessorCollectorTest extends \PHPUnit_Framework_TestCase
 
     public function testNotCollectingByMatchingMethodWithEmptyArgumentValue()
     {
-        $value = \Mockery::mock('PhpParser\Node\Scalar\String');
+        $value = \Mockery::mock('PhpParser\Node\Scalar\String_');
         $value->value = '';
         $node = \Mockery::mock('PhpParser\Node\Expr\MethodCall');
         $arg = \Mockery::mock('PhpParser\Node\Arg');
@@ -105,7 +105,7 @@ class IocContainerAccessorCollectorTest extends \PHPUnit_Framework_TestCase
 
     public function testCollectingByFilteredToNull()
     {
-        $value = \Mockery::mock('PhpParser\Node\Scalar\String');
+        $value = \Mockery::mock('PhpParser\Node\Scalar\String_');
         $value->value = 'Baz';
         $node = \Mockery::mock('PhpParser\Node\Expr\MethodCall');
         $arg = \Mockery::mock('PhpParser\Node\Arg');
@@ -120,7 +120,7 @@ class IocContainerAccessorCollectorTest extends \PHPUnit_Framework_TestCase
     {
         $testcase = $this;
         $attributes = array('foo' => 'bar');
-        $value = \Mockery::mock('PhpParser\Node\Scalar\String');
+        $value = \Mockery::mock('PhpParser\Node\Scalar\String_');
         $value->value = 'Baz';
         $node = \Mockery::mock('PhpParser\Node\Expr\MethodCall');
         $node->shouldReceive('getAttributes')->andReturn($attributes);
@@ -134,11 +134,10 @@ class IocContainerAccessorCollectorTest extends \PHPUnit_Framework_TestCase
             }
         );
         $this->adt->shouldReceive('addNamespacedString')->once()->andReturnUsing(
-            function ($object) use ($testcase, $attributes) {
+            function ($object) use ($testcase) {
                 /** @var \PhpParser\Node\Name $object */
                 $testcase->assertInstanceOf('PhpParser\Node\Name', $object);
                 $testcase->assertSame($object->toString(), 'Baz');
-                $testcase->assertSame($object->getAttributes(), $attributes);
             }
         );
 

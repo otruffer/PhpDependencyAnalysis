@@ -2,7 +2,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Marco Muths
+ * Copyright (c) 2015 Marco Muths
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -46,8 +46,11 @@ class InvalidCollectorTest extends \PHPUnit_Framework_TestCase
 
     public function testCollecting()
     {
+        $attributes = array('foo' => 'bar');
         $this->setExpectedException('RuntimeException');
         $node = \Mockery::mock('PhpParser\Node\Name');
+        $node->shouldReceive('getAttributes')->andReturn($attributes);
+        $node->shouldReceive('setAttribute');
         $this->nodeNameFilter->shouldReceive('filter')->once()->andReturnUsing(
             function ($object) {
                 return $object;

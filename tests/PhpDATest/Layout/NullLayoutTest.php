@@ -2,7 +2,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Marco Muths
+ * Copyright (c) 2015 Marco Muths
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -90,5 +90,15 @@ class NullLayoutTest extends \PHPUnit_Framework_TestCase
     public function testAccessVertexUnsupported()
     {
         $this->assertSame(array(), $this->fixture->getVertexUnsupported());
+    }
+
+    public function testAccessEdgeInvalid()
+    {
+        $this->assertSame(array(), $this->fixture->getEdgeInvalid());
+    }
+
+    public function testAccessEdgeCycle()
+    {
+        $this->assertSame(array(), $this->fixture->getEdgeCycle());
     }
 }

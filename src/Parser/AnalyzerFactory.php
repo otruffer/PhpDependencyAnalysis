@@ -2,7 +2,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Marco Muths
+ * Copyright (c) 2015 Marco Muths
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,8 +25,6 @@
 
 namespace PhpDA\Parser;
 
-use PhpDA\Entity\AnalysisCollection;
-use PhpDA\Layout\Graph;
 use PhpDA\Parser\Visitor\Required\AdtCollector;
 use PhpDA\Parser\Visitor\Required\NameResolver;
 use PhpDA\Plugin\FactoryInterface;
@@ -52,7 +50,6 @@ class AnalyzerFactory implements FactoryInterface
             $this->createParser(),
             $this->createAdtTraverser(),
             $this->createNodeTraverser(),
-            $this->createCollection(),
             $this->getLogger()
         );
     }
@@ -92,14 +89,6 @@ class AnalyzerFactory implements FactoryInterface
         $traverser->setVisitorLoader($loader);
 
         return $traverser;
-    }
-
-    /**
-     * @return AnalysisCollection
-     */
-    protected function createCollection()
-    {
-        return new AnalysisCollection(new Graph);
     }
 
     /**

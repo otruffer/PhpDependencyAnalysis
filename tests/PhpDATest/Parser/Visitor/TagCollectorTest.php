@@ -2,7 +2,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Marco Muths
+ * Copyright (c) 2015 Marco Muths
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -81,7 +81,9 @@ class TagCollectorTest extends \PHPUnit_Framework_TestCase
     public function testCollecting()
     {
         $testcase = $this;
+        $attributes = array('foo' => 'bar');
         $node = \Mockery::mock('PhpParser\Node');
+        $node->shouldReceive('getAttributes')->andReturn($attributes);
         $node->shouldReceive('hasAttribute')->once()
             ->with(NameResolver::TAG_NAMES_ATTRIBUTE)->andReturn(true);
         $node->shouldReceive('getAttribute')->once()
@@ -92,10 +94,12 @@ class TagCollectorTest extends \PHPUnit_Framework_TestCase
             }
         );
         $this->adt->shouldReceive('addUsedNamespace')->twice()->andReturnUsing(
-            function ($object) use ($testcase) {
+            function ($object) use ($testcase, $attributes) {
                 /** @var \PhpParser\Node\Name $object */
                 $testcase->assertInstanceOf('PhpParser\Node\Name', $object);
+                $testcase->assertTrue($object->getAttribute('isComment'));
                 $testcase->assertContains($object->toString(), array('foo', 'bar'));
+                $testcase->assertSame('bar', $object->getAttribute('foo'));
             }
         );
 

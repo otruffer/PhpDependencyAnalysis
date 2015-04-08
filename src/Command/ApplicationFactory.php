@@ -2,7 +2,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Marco Muths
+ * Copyright (c) 2015 Marco Muths
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -53,7 +53,7 @@ class ApplicationFactory implements FactoryInterface
         $command = new Analyze(Message::COMMAND);
 
         $command->setHelp(Message::HELP);
-        $command->setDescription(Message::NAME . ' (' . Message::VERSION . ').');
+        $command->setDescription(Message::NAME . ' (' . Message::VERSION . ')');
         $command->setConfigParser(new Parser);
         $command->setStrategyLoader(new Loader);
 

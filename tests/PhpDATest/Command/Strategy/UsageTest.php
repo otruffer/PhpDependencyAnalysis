@@ -2,7 +2,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Marco Muths
+ * Copyright (c) 2015 Marco Muths
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -44,14 +44,22 @@ class UsageTest extends \PHPUnit_Framework_TestCase
     /** @var \PhpDA\Writer\AdapterInterface | \Mockery\MockInterface */
     protected $writer;
 
+    /** @var \PhpDA\Layout\BuilderInterface | \Mockery\MockInterface */
+    protected $builder;
+
     /** @var \Symfony\Component\Console\Output\OutputInterface | \Mockery\MockInterface */
     protected $output;
 
     /** @var \PhpDA\Command\Config | \Mockery\MockInterface */
     protected $config;
 
+    /** @var \PhpDA\Plugin\LoaderInterface | \Mockery\MockInterface */
+    protected $loader;
+
     protected function setUp()
     {
+        $this->loader = \Mockery::mock('PhpDA\Plugin\LoaderInterface');
+        $this->builder = \Mockery::mock('PhpDA\Layout\BuilderInterface');
         $this->collection = \Mockery::mock('PhpDA\Entity\AnalysisCollection');
         $this->finder = \Mockery::mock('Symfony\Component\Finder\Finder');
         $this->analyzer = \Mockery::mock('PhpDA\Parser\AnalyzerInterface');
@@ -59,8 +67,19 @@ class UsageTest extends \PHPUnit_Framework_TestCase
         $this->output = \Mockery::mock('Symfony\Component\Console\Output\OutputInterface')->shouldIgnoreMissing();
         $this->config = \Mockery::mock('PhpDA\Command\Config');
 
+        $logger = \Mockery::mock('PhpDA\Parser\Logger');
+        $logger->shouldReceive('getEntries')->andReturn(array());
+        $logger->shouldReceive('getEntries')->andReturn(array());
+        $logger->shouldReceive('isEmpty')->andReturn(true);
+
+        $formatter = \Mockery::mock('Symfony\Component\Console\Formatter\OutputFormatterInterface');
+        $formatter->shouldIgnoreMissing();
+
+        $this->output->shouldReceive('getFormatter')->andReturn($formatter);
         $this->output->shouldReceive('writeln');
         $this->analyzer->shouldReceive('getAnalysisCollection')->andReturn($this->collection);
+        $this->analyzer->shouldReceive('getLogger')->andReturn($logger);
+        $this->builder->shouldReceive('setLogEntries')->with(array());
 
         $filePattern = '*.php';
         $source = './src';
@@ -69,24 +88,13 @@ class UsageTest extends \PHPUnit_Framework_TestCase
         $this->config->shouldReceive('getFilePattern')->once()->andReturn($filePattern);
         $this->config->shouldReceive('getSource')->once()->andReturn($source);
         $this->config->shouldReceive('getIgnore')->once()->andReturn($ignores);
-        $this->config->shouldReceive('hasVisitorOptionsForAggregation')->once()->andReturn(true);
-
-        $this->collection->shouldReceive('setGroupLength')->once()->with(12);
-        $this->config->shouldReceive('getGroupLength')->once()->andReturn(12);
 
         $this->finder->shouldReceive('files')->once()->andReturnSelf();
         $this->finder->shouldReceive('name')->once()->with($filePattern)->andReturnSelf();
         $this->finder->shouldReceive('in')->once()->with($source)->andReturnSelf();
         $this->finder->shouldReceive('exclude')->once()->with($ignores)->andReturnSelf();
 
-        $testcase = $this;
-        $this->collection->shouldReceive('bindLayout')->once()->andReturnUsing(
-            function ($layout) use ($testcase) {
-                $testcase->assertInstanceOf('PhpDA\Layout\Aggregation', $layout);
-            }
-        );
-
-        $this->fixture = new Usage($this->finder, $this->analyzer, $this->writer);
+        $this->fixture = new Usage($this->finder, $this->analyzer, $this->builder, $this->writer, $this->loader);
     }
 
     public function testNothingToParse()
@@ -98,12 +106,13 @@ class UsageTest extends \PHPUnit_Framework_TestCase
 
     public function testExecute()
     {
+        $testcase = $this;
         $this->prepareAnalyzer();
 
         $file = \Mockery::mock('Symfony\Component\Finder\SplFileInfo');
         $file->shouldReceive('getRealPath')->once()->andReturn('anypath');
 
-        $this->output->shouldReceive('getVerbosity')->once()->andReturn(3);
+        $this->output->shouldReceive('getVerbosity')->andReturn(3);
         $this->finder->shouldReceive('count')->once()->andReturn(6000);
         $this->finder->shouldReceive('getIterator')->andReturn(array($file));
         $this->fixture->setOptions(array('output' => $this->output, 'config' => $this->config));
@@ -112,11 +121,26 @@ class UsageTest extends \PHPUnit_Framework_TestCase
 
         $formatter = 'format';
         $target = 'destination';
+        $groupLength = 12;
+        $graph = \Mockery::mock('Fhaculty\Graph\Graph');
 
+        $this->config->shouldReceive('hasVisitorOptionsForAggregation')->once()->andReturn(false);
         $this->config->shouldReceive('getFormatter')->once()->andReturn($formatter);
         $this->config->shouldReceive('getTarget')->twice()->andReturn($target);
+        $this->config->shouldReceive('getGroupLength')->once()->andReturn($groupLength);
+        $this->config->shouldReceive('getReferenceValidator')->andReturnNull();
 
-        $this->writer->shouldReceive('write')->once()->with($this->collection)->andReturnSelf();
+        $this->builder->shouldReceive('setGroupLength')->once()->with($groupLength);
+        $this->builder->shouldReceive('setAnalysisCollection')->once()->with($this->collection);
+        $this->builder->shouldReceive('setLayout')->once()->andReturnUsing(
+            function ($layout) use ($testcase) {
+                $testcase->assertInstanceOf('PhpDA\Layout\Standard', $layout);
+            }
+        );
+        $this->builder->shouldReceive('create')->once()->andReturnSelf();
+        $this->builder->shouldReceive('getGraph')->once()->andReturn($graph);
+
+        $this->writer->shouldReceive('write')->once()->with($graph)->andReturnSelf();
         $this->writer->shouldReceive('with')->once()->with($formatter)->andReturnSelf();
         $this->writer->shouldReceive('to')->once()->with($target)->andReturnSelf();
 
@@ -141,10 +165,6 @@ class UsageTest extends \PHPUnit_Framework_TestCase
         );
         $traverser->shouldReceive('bindVisitors')->once()->with($visitor, $visitorOptions);
 
-        $logger = \Mockery::mock('PhpDA\Parser\Logger');
-        $logger->shouldReceive('isEmpty')->once()->andReturn(true);
-
         $this->analyzer->shouldReceive('getNodeTraverser')->once()->andReturn($traverser);
-        $this->analyzer->shouldReceive('getLogger')->once()->andReturn($logger);
     }
 }

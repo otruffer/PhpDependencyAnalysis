@@ -2,7 +2,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Marco Muths
+ * Copyright (c) 2015 Marco Muths
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,9 @@
 
 namespace PhpDA\Writer\Strategy;
 
-class Html extends AbstractStrategy
+use Fhaculty\Graph\Graph;
+
+class Html extends AbstractGraphViz
 {
     /** @var string */
     private $imagePlaceholder = '{GRAPH_IMAGE}';
@@ -78,13 +80,11 @@ class Html extends AbstractStrategy
         $this->setTemplate('<html><body>' . $this->getImagePlaceholder() . '</body></html>');
     }
 
-    protected function createOutput()
+    protected function toString(Graph $graph)
     {
-        $this->getGraphViz()->setFormat('svg');
-
         return str_replace(
             $this->getImagePlaceholder(),
-            $this->getGraphViz()->createImageHtml(),
+            $this->getGraphViz()->setFormat('svg')->createImageHtml($graph),
             $this->getTemplate()
         );
     }

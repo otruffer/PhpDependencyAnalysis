@@ -2,7 +2,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Marco Muths
+ * Copyright (c) 2015 Marco Muths
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -172,11 +172,10 @@ class SuperglobalCollectorTest extends \PHPUnit_Framework_TestCase
             }
         );
         $this->adt->shouldReceive('addUsedNamespace')->once()->andReturnUsing(
-            function ($object) use ($testcase, $var, $attributes) {
+            function ($object) use ($testcase, $var) {
                 /** @var \PhpParser\Node\Name $object */
                 $testcase->assertInstanceOf('PhpParser\Node\Name', $object);
                 $testcase->assertSame($object->toString(), $var);
-                $testcase->assertSame($object->getAttributes(), $attributes);
             }
         );
 

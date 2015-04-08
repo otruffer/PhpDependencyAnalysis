@@ -2,7 +2,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Marco Muths
+ * Copyright (c) 2015 Marco Muths
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,37 +26,29 @@
 namespace PhpDA\Writer\Strategy;
 
 use Fhaculty\Graph\Graph;
-use PhpDA\Entity\AnalysisCollection;
+use PhpDA\Writer\Extractor\ExtractionInterface;
+use PhpDA\Writer\Extractor\Graph as GraphExtractor;
 
-/**
- * Gives you a json encoded file.
- * Every id of a vertex in the graph is a root identifier in the json file.
- * Every first level vertex (it has an edge TO the vertex) is in the collection to that identifier.
- * E.g.:
- *
- * {
- *   "firstThing" :
- *      [
- *          "dependencyOfFirstThing1",
- *          "dependencyOfFirstThing2"
- *      ]
- * }
- */
 class Json implements StrategyInterface
 {
-    public function filter(AnalysisCollection $analysisCollection)
-    {
-        $graph = $analysisCollection->getGraph();
+    /** @var ExtractionInterface */
+    private $extractor;
 
-        return json_encode($this->getVertexToVerticesArray($graph));
+    /**
+     * @param ExtractionInterface $extractor
+     */
+    public function setExtractor(ExtractionInterface $extractor)
+    {
+        $this->extractor = $extractor;
     }
 
     /**
-     * @param Graph $graph
-     * @return array
+     * @param $graph
+     * @return ExtractionInterface
      */
-    protected function getVertexToVerticesArray(Graph $graph)
+    public function extract($graph)
     {
+
         $vertexToVertices = array();
 
         $vertices = $graph->getVertices();
@@ -72,21 +64,22 @@ class Json implements StrategyInterface
             }
         }
 
-        return $vertexToVertices;
+        if (!$this->extractor instanceof ExtractionInterface) {
+            $this->extractor = new GraphExtractor;
+        }
+
+        return $this->extractor;
     }
 
-    /**
-     * @param $array array
-     * @param $from  string
-     * @param $to    string
-     */
-    protected function addArrayEdge(&$array, $from, $to)
+    public function filter(Graph $graph)
     {
-        if (array_key_exists($from, $array)) {
-            $array[$from][] = $to;
-        } else {
-            $array[$from] = array($to);
+        $data = $this->extract($graph);
+
+        if ($json = json_encode($data)) {
+            return $json;
         }
+
+        throw new \RuntimeException('Cannot create JSON');
     }
 
     /**

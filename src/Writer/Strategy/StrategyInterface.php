@@ -2,7 +2,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Marco Muths
+ * Copyright (c) 2015 Marco Muths
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,13 +25,14 @@
 
 namespace PhpDA\Writer\Strategy;
 
-use PhpDA\Entity\AnalysisCollection;
+use Fhaculty\Graph\Graph;
 
 interface StrategyInterface
 {
     /**
-     * @param AnalysisCollection $analysisCollection
+     * @param Graph $graph
      * @return string
+     * @throws \RuntimeException
      */
-    public function filter(AnalysisCollection $analysisCollection);
+    public function filter(Graph $graph);
 }

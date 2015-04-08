@@ -2,7 +2,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Marco Muths
+ * Copyright (c) 2015 Marco Muths
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -88,7 +88,13 @@ class Analyze extends Command
         $output->writeln($this->getDescription() . PHP_EOL);
         $output->writeln(Message::READ_CONFIG_FROM . $this->configFilePath . PHP_EOL);
 
-        $this->loadStrategy($config->getMode(), array('config' => $config, 'output' => $output))->execute();
+        $strategyOptions = array(
+            'config'      => $config,
+            'output'      => $output,
+            'layoutLabel' => $this->getDescription(),
+        );
+
+        $this->loadStrategy($config->getMode(), $strategyOptions)->execute();
     }
 
     /**
@@ -142,12 +148,12 @@ class Analyze extends Command
      */
     private function loadStrategy($type, array $options = null)
     {
-        $fqn = 'PhpDA\\Command\\Strategy\\' . ucfirst($type) . 'Factory';
-        $strategy = $this->strategyLoader->get($fqn, $options);
+        $fqcn = 'PhpDA\\Command\\Strategy\\' . ucfirst($type) . 'Factory';
+        $strategy = $this->strategyLoader->get($fqcn, $options);
 
         if (!$strategy instanceof StrategyInterface) {
             throw new \RuntimeException(
-                sprintf('Strategy \'%s\' must implement PhpDA\\Command\\Strategy\\StrategyInterface', $fqn)
+                sprintf('Strategy \'%s\' must implement PhpDA\\Command\\Strategy\\StrategyInterface', $fqcn)
             );
         }
 

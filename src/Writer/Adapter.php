@@ -2,7 +2,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Marco Muths
+ * Copyright (c) 2015 Marco Muths
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,7 @@
 
 namespace PhpDA\Writer;
 
-use PhpDA\Entity\AnalysisCollection;
+use Fhaculty\Graph\Graph;
 use PhpDA\Plugin\LoaderInterface;
 use PhpDA\Writer\Strategy\StrategyInterface;
 
@@ -34,11 +34,11 @@ class Adapter implements AdapterInterface
     /** @var LoaderInterface */
     private $strategyLoader;
 
-    /** @var AnalysisCollection */
-    private $analysisCollection;
+    /** @var Graph */
+    private $graph;
 
     /** @var string */
-    private $fqn;
+    private $fqcn;
 
     /**
      * @param LoaderInterface $loader
@@ -48,15 +48,15 @@ class Adapter implements AdapterInterface
         $this->strategyLoader = $loader;
     }
 
-    public function write(AnalysisCollection $collection)
+    public function write(Graph $graph)
     {
-        $this->analysisCollection = $collection;
+        $this->graph = $graph;
         return $this;
     }
 
-    public function with($fqn)
+    public function with($fqcn)
     {
-        $this->fqn = $fqn;
+        $this->fqcn = $fqcn;
         return $this;
     }
 
@@ -71,7 +71,7 @@ class Adapter implements AdapterInterface
      */
     private function createContent()
     {
-        return $this->loadStrategy()->filter($this->analysisCollection);
+        return $this->loadStrategy()->filter($this->graph);
     }
 
     /**
@@ -80,11 +80,11 @@ class Adapter implements AdapterInterface
      */
     private function loadStrategy()
     {
-        $strategy = $this->strategyLoader->get($this->fqn);
+        $strategy = $this->strategyLoader->get($this->fqcn);
 
         if (!$strategy instanceof StrategyInterface) {
             throw new \RuntimeException(
-                sprintf('Strategy \'%s\' must implement PhpDA\\Writer\\Strategy\\StrategyInterface', $this->fqn)
+                sprintf('Strategy \'%s\' must implement PhpDA\\Writer\\Strategy\\StrategyInterface', $this->fqcn)
             );
         }
 

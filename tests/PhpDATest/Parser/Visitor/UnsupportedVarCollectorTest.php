@@ -2,7 +2,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Marco Muths
+ * Copyright (c) 2015 Marco Muths
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -123,11 +123,10 @@ class UnsupportedVarCollectorTest extends \PHPUnit_Framework_TestCase
             }
         );
         $this->adt->shouldReceive('addUnsupportedStmt')->once()->andReturnUsing(
-            function ($object) use ($testcase, $attributes) {
+            function ($object) use ($testcase) {
                 /** @var \PhpParser\Node\Name $object */
                 $testcase->assertInstanceOf('PhpParser\Node\Name', $object);
                 $testcase->assertSame($object->toString(), 'dynamic varname');
-                $testcase->assertSame($object->getAttributes(), $attributes);
             }
         );
 

@@ -2,7 +2,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Marco Muths
+ * Copyright (c) 2015 Marco Muths
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -38,7 +38,7 @@ class IocContainerAccessorCollector extends AbstractVisitor implements Namespace
         ) {
             /** @var Node\Arg $arg */
             $arg = array_shift($node->args);
-            if ($arg->value instanceof Node\Scalar\String
+            if ($arg->value instanceof Node\Scalar\String_
                 && is_string($arg->value->value)
                 && !empty($arg->value->value)
             ) {

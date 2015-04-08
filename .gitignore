@@ -1,7 +1,4 @@
-!.gitignore
 composer.lock
 vendor
-vendor/*
-tmp
 tmp/*
 .idea

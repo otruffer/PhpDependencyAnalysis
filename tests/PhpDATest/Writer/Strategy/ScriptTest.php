@@ -2,7 +2,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Marco Muths
+ * Copyright (c) 2015 Marco Muths
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,6 @@
 
 namespace PhpDATest\Writer\Strategy;
 
-use PhpDA\Entity\AnalysisCollection;
 use PhpDA\Writer\Strategy\Script;
 
 class ScriptTest extends \PHPUnit_Framework_TestCase
@@ -33,27 +32,23 @@ class ScriptTest extends \PHPUnit_Framework_TestCase
     /** @var Script */
     protected $fixture;
 
-    /** @var string */
-    protected $output = 'foo';
-
-    /** @var \PhpDA\Layout\GraphViz | \Mockery\MockInterface */
-    protected $graphViz = 'foo';
-
     protected function setUp()
     {
-        $mock = $this->graphViz = \Mockery::mock('PhpDA\Layout\GraphViz');
-        $callback = function (AnalysisCollection $collection) use ($mock) {
-            return $mock;
-        };
         $this->fixture = new Script;
-        $this->fixture->setGraphCreationCallback($callback);
     }
 
     public function testFilter()
     {
-        $analysisCollection = \Mockery::mock('PhpDA\Entity\AnalysisCollection');
-        $this->graphViz->shouldReceive('createScript')->once()->andReturn($this->output);
+        $graph = \Mockery::mock('Fhaculty\Graph\Graph');
+        $graph->shouldReceive('getAttribute')->with('graphviz.groups')->andReturn(array('groups'));
+        $graph->shouldReceive('getAttribute')->with('graphviz.groupLayout')->andReturn(array('groupLayout'));
 
-        $this->assertSame($this->output, $this->fixture->filter($analysisCollection));
+        $graphViz = \Mockery::mock('PhpDA\Layout\GraphViz');
+        $graphViz->shouldReceive('setGroups')->once()->with(array('groups'));
+        $graphViz->shouldReceive('setGroupLayout')->once()->with(array('groupLayout'));
+        $graphViz->shouldReceive('createScript')->once()->with($graph)->andReturn('foo');
+        $this->fixture->setGraphViz($graphViz);
+
+        $this->assertSame('foo', $this->fixture->filter($graph));
     }
 }

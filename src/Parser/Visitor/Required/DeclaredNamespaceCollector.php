@@ -2,7 +2,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Marco Muths
+ * Copyright (c) 2015 Marco Muths
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,21 +32,17 @@ use PhpParser\Node;
 
 class DeclaredNamespaceCollector extends AbstractVisitor implements DeclaredNamespaceCollectorInterface
 {
+    /**
+     * {@inheritdoc}
+     * @throws \PhpParser\Error
+     */
     public function leaveNode(Node $node)
     {
-        if ($node instanceof Node\Stmt\Class_
-            || $node instanceof Node\Stmt\Trait_
-            || $node instanceof Node\Stmt\Interface_
-        ) {
-            /** @var Node\Stmt $node */
-            $subNodes = $node->getIterator();
-            if ($subNodes->offsetExists('namespacedName')) {
-                if (!$this->getAdt()->hasDeclaredGlobalNamespace()) {
-                    throw new Error('DeclaredNamespace is already defined', $node->getLine());
-                }
-                $namespacedName = $subNodes->offsetGet('namespacedName');
-                $this->collect(new Node\Name($namespacedName), $node);
+        if ($node instanceof Node\Stmt\ClassLike) {
+            if (!$this->getAdt()->hasDeclaredGlobalNamespace()) {
+                throw new Error('DeclaredNamespace is already defined', $node->getLine());
             }
+            $this->collect(new Node\Name($node->namespacedName), $node);
         }
     }
 }

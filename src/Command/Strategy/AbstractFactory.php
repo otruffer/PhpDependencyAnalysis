@@ -2,7 +2,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Marco Muths
+ * Copyright (c) 2015 Marco Muths
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,12 +25,19 @@
 
 namespace PhpDA\Command\Strategy;
 
+use Fhaculty\Graph\Graph;
+use PhpDA\Layout\Builder;
+use PhpDA\Layout\Helper\CycleDetector;
+use PhpDA\Layout\Helper\GroupGenerator;
 use PhpDA\Parser\AnalyzerFactory;
 use PhpDA\Plugin\FactoryInterface;
 use PhpDA\Plugin\Loader;
 use PhpDA\Writer\Adapter;
 use Symfony\Component\Finder\Finder;
 
+/**
+ * @SuppressWarnings("PMD.CouplingBetweenObjects")
+ */
 abstract class AbstractFactory implements FactoryInterface
 {
     /**
@@ -52,10 +59,28 @@ abstract class AbstractFactory implements FactoryInterface
     }
 
     /**
+     * @return Builder
+     */
+    protected function createGraphBuilder()
+    {
+        $cycleDetector = new CycleDetector;
+
+        return new Builder(new Graph, new GroupGenerator, $cycleDetector);
+    }
+
+    /**
      * @return Adapter
      */
     protected function createWriteAdapter()
     {
-        return new Adapter(new Loader);
+        return new Adapter($this->createLoader());
+    }
+
+    /**
+     * @return Loader
+     */
+    protected function createLoader()
+    {
+        return new Loader;
     }
 }

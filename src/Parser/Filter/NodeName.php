@@ -2,7 +2,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Marco Muths
+ * Copyright (c) 2015 Marco Muths
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -83,7 +83,13 @@ class NodeName implements NodeNameInterface
             return null;
         }
 
-        return $this->slice($name);
+        $nameParts = $this->slice($name->parts);
+
+        if (empty($nameParts)) {
+            return null;
+        }
+
+        return new Node\Name($nameParts);
     }
 
     /**
@@ -115,21 +121,19 @@ class NodeName implements NodeNameInterface
     }
 
     /**
-     * @param Node\Name $name
-     * @return Node\Name
+     * @param array $nameParts
+     * @return array
      */
-    private function slice(Node\Name $name)
+    private function slice(array $nameParts)
     {
         if (is_null($this->sliceOffset) && is_null($this->sliceLength)) {
-            return $name;
+            return $nameParts;
         }
 
         if (is_null($this->sliceLength)) {
-            $parts = array_slice($name->parts, (int) $this->sliceOffset);
-        } else {
-            $parts = array_slice($name->parts, (int) $this->sliceOffset, (int) $this->sliceLength);
+            return array_slice($nameParts, (int) $this->sliceOffset);
         }
 
-        return new Node\Name($parts);
+        return array_slice($nameParts, (int) $this->sliceOffset, (int) $this->sliceLength);
     }
 }

@@ -2,7 +2,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Marco Muths
+ * Copyright (c) 2015 Marco Muths
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,36 +29,33 @@ use PhpDA\Writer\Strategy\Json;
 
 class JsonTest extends \PHPUnit_Framework_TestCase
 {
-    /** @var Script */
+    /** @var Json */
     protected $fixture;
 
-    /** @var string */
-    protected $output = '{"ClassA":["DependencyA","DependencyB"]}';
+    /** @var \PhpDA\Writer\Extractor\ExtractionInterface | \Mockery\MockInterface */
+    protected $extractor;
 
     protected function setUp()
     {
+        $this->extractor = \Mockery::mock('PhpDA\Writer\Extractor\ExtractionInterface');
         $this->fixture = new Json;
+    }
+
+    public function testMutateAndAccessExtractor()
+    {
+        $this->assertInstanceOf('PhpDA\Writer\Extractor\Graph', $this->fixture->getExtractor());
+
+        $this->fixture->setExtractor($this->extractor);
+        $this->assertSame($this->extractor, $this->fixture->getExtractor());
     }
 
     public function testFilter()
     {
-        $analysisCollection = \Mockery::mock('PhpDA\Entity\AnalysisCollection');
+        $data = array('Foo' => 'Bar');
         $graph = \Mockery::mock('Fhaculty\Graph\Graph');
-        $vertex_from = \Mockery::mock('Fhaculty\Graph\Vertex');
-        //The following line is a workaround on mocking Fhaculty\Graph\Set\Vertices as the file has errors (e.g. usage
-        //of a never defined constant) which break the PhpReflection classes and thus break Mockery.
-        $vertex_to_set = \Mockery::mock('vertices');
-        $vertex_to1 = \Mockery::mock('Fhaculty\Graph\Vertex');
-        $vertex_to2 = \Mockery::mock('Fhaculty\Graph\Vertex');
+        $this->extractor->shouldReceive('extract')->with($graph)->once()->andReturn($data);
+        $this->fixture->setExtractor($this->extractor);
 
-        $analysisCollection->shouldReceive('getGraph')->once()->andReturn($graph);
-        $graph->shouldReceive('getVertices')->once()->andReturn(array($vertex_from));
-        $vertex_from->shouldReceive('getVerticesEdgeTo')->once()->andReturn($vertex_to_set);
-        $vertex_to_set->shouldReceive('getVerticesDistinct')->once()->andReturn(array($vertex_to1, $vertex_to2));
-        $vertex_from->shouldReceive('getId')->times(2)->andReturn("ClassA");
-        $vertex_to1->shouldReceive('getId')->once()->andReturn("DependencyA");
-        $vertex_to2->shouldReceive('getId')->once()->andReturn("DependencyB");
-
-        $this->assertSame($this->output, $this->fixture->filter($analysisCollection));
+        $this->assertSame(json_encode($data), $this->fixture->filter($graph));
     }
 }

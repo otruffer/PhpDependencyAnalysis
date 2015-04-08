@@ -2,7 +2,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Marco Muths
+ * Copyright (c) 2015 Marco Muths
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,7 @@
 
 set_time_limit(0);
 ini_set('memory_limit', -1);
-ini_set('xdebug.max_nesting_level', 2000);
+ini_set('xdebug.max_nesting_level', 4000);
 
 if (!(@include_once __DIR__ . '/../vendor/autoload.php')
     && !(@include_once __DIR__ . '/../../../autoload.php')

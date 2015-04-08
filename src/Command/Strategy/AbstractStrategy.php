@@ -2,7 +2,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Marco Muths
+ * Copyright (c) 2015 Marco Muths
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,6 +30,8 @@ use PhpDA\Command\MessageInterface as Message;
 use PhpDA\Layout;
 use PhpDA\Parser\AnalyzerInterface;
 use PhpDA\Plugin\ConfigurableInterface;
+use PhpDA\Plugin\LoaderInterface;
+use PhpDA\Reference\ValidatorInterface;
 use PhpDA\Writer\AdapterInterface;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Output\NullOutput;
@@ -59,16 +61,31 @@ abstract class AbstractStrategy implements ConfigurableInterface, StrategyInterf
     /** @var AdapterInterface */
     private $writeAdapter;
 
+    /** @var LoaderInterface */
+    private $pluginLoader;
+
+    /** @var string */
+    private $layoutLabel = '';
+
     /**
-     * @param Finder            $finder
-     * @param AnalyzerInterface $analyzer
-     * @param AdapterInterface  $writeAdapter
+     * @param Finder                  $finder
+     * @param AnalyzerInterface       $analyzer
+     * @param Layout\BuilderInterface $graphBuilder
+     * @param AdapterInterface        $writeAdapter
+     * @param LoaderInterface         $loader
      */
-    public function __construct(Finder $finder, AnalyzerInterface $analyzer, AdapterInterface $writeAdapter)
-    {
+    public function __construct(
+        Finder $finder,
+        AnalyzerInterface $analyzer,
+        Layout\BuilderInterface $graphBuilder,
+        AdapterInterface $writeAdapter,
+        LoaderInterface $loader
+    ) {
         $this->finder = $finder;
         $this->analyzer = $analyzer;
+        $this->graphBuilder = $graphBuilder;
         $this->writeAdapter = $writeAdapter;
+        $this->pluginLoader = $loader;
 
         $this->config = new Config(array());
         $this->output = new NullOutput;
@@ -84,8 +101,11 @@ abstract class AbstractStrategy implements ConfigurableInterface, StrategyInterf
             $this->output = $options['output'];
         }
 
+        if (isset($options['layoutLabel'])) {
+            $this->layoutLabel = (string) $options['layoutLabel'];
+        }
+
         $this->initFinder();
-        $this->initLayout();
     }
 
     private function initFinder()
@@ -100,19 +120,6 @@ abstract class AbstractStrategy implements ConfigurableInterface, StrategyInterf
         }
 
         $this->fileCnt = $this->getFinder()->count();
-    }
-
-    private function initLayout()
-    {
-        $analysisCollection = $this->getAnalyzer()->getAnalysisCollection();
-
-        if ($this->getConfig()->hasVisitorOptionsForAggregation()) {
-            $analysisCollection->bindLayout(new Layout\Aggregation);
-        } else {
-            $analysisCollection->bindLayout(new Layout\Standard);
-        }
-
-        $analysisCollection->setGroupLength($this->getConfig()->getGroupLength());
     }
 
     /**
@@ -153,6 +160,14 @@ abstract class AbstractStrategy implements ConfigurableInterface, StrategyInterf
     protected function getWriteAdapter()
     {
         return $this->writeAdapter;
+    }
+
+    /**
+     * @return Layout\BuilderInterface
+     */
+    protected function getGraphBuilder()
+    {
+        return $this->graphBuilder;
     }
 
     public function execute()
@@ -200,7 +215,7 @@ abstract class AbstractStrategy implements ConfigurableInterface, StrategyInterf
     {
         foreach ($this->getFinder()->getIterator() as $file) {
             /** @var \Symfony\Component\Finder\SplFileInfo $file */
-            if ($this->outputVerbosityIsVerbosed()) {
+            if (OutputInterface::VERBOSITY_VERBOSE <= $this->getOutput()->getVerbosity()) {
                 $progressHelper->clear();
                 $this->getOutput()->writeln("\x0D" . $file->getRealPath());
                 $progressHelper->display();
@@ -210,23 +225,58 @@ abstract class AbstractStrategy implements ConfigurableInterface, StrategyInterf
         }
     }
 
-    /**
-     * @return bool
-     */
-    private function outputVerbosityIsVerbosed()
-    {
-        return OutputInterface::VERBOSITY_VERBOSE <= $this->getOutput()->getVerbosity();
-    }
-
     private function writeAnalysis()
     {
-        $targetRealPath = realpath($this->getConfig()->getTarget());
-        $this->getOutput()->writeln(PHP_EOL . PHP_EOL . Message::WRITE_GRAPH_TO . $targetRealPath);
+        $this->getOutput()->writeln(PHP_EOL . PHP_EOL . Message::WRITE_GRAPH_TO . $this->getConfig()->getTarget());
 
         $this->getWriteAdapter()
-            ->write($this->getAnalyzer()->getAnalysisCollection())
+            ->write($this->createGraph())
             ->with($this->getConfig()->getFormatter())
             ->to($this->getConfig()->getTarget());
+    }
+
+    /**
+     * @return \Fhaculty\Graph\Graph
+     */
+    private function createGraph()
+    {
+        if ($this->getConfig()->hasVisitorOptionsForAggregation()) {
+            $layout = new Layout\Aggregation($this->layoutLabel);
+        } else {
+            $layout = new Layout\Standard($this->layoutLabel);
+        }
+
+        $graphBuilder = $this->getGraphBuilder();
+        $graphBuilder->setLogEntries($this->getAnalyzer()->getLogger()->getEntries());
+        $graphBuilder->setLayout($layout);
+        $graphBuilder->setGroupLength($this->getConfig()->getGroupLength());
+        $graphBuilder->setAnalysisCollection($this->getAnalyzer()->getAnalysisCollection());
+
+        if ($referenceValidator = $this->loadReferenceValidator()) {
+            $graphBuilder->setReferenceValidator($referenceValidator);
+        }
+
+        return $graphBuilder->create()->getGraph();
+    }
+
+    /**
+     * @throws \RuntimeException
+     * @return ValidatorInterface|null
+     */
+    private function loadReferenceValidator()
+    {
+        $referenceValidator = null;
+
+        if ($fqcn = $this->getConfig()->getReferenceValidator()) {
+            $referenceValidator = $this->pluginLoader->get($fqcn);
+            if (!$referenceValidator instanceof ValidatorInterface) {
+                throw new \RuntimeException(
+                    sprintf('ReferenceValidator \'%s\' must implement PhpDA\\Reference\\ValidatorInterface', $fqcn)
+                );
+            }
+        }
+
+        return $referenceValidator;
     }
 
     private function writeAnalysisFailures()

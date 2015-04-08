@@ -2,7 +2,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Marco Muths
+ * Copyright (c) 2015 Marco Muths
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,26 +25,46 @@
 
 namespace PhpDA\Layout;
 
-use Fhaculty\Graph\Graph as FhacultyGraph;
+use Fhaculty\Graph\Graph;
+use PhpDA\Entity\AnalysisCollection;
+use PhpDA\Reference\ValidatorInterface;
 
-class Graph extends FhacultyGraph
+interface BuilderInterface
 {
-    /** @var array */
-    private $layout = array();
+    public function setCallMode();
 
     /**
-     * @param array $layout
+     * @param array $entries
      */
-    public function setLayout(array $layout)
-    {
-        $this->layout = $layout;
-    }
+    public function setLogEntries(array $entries);
 
     /**
-     * @return array
+     * @param int $groupLength
      */
-    public function getLayout()
-    {
-        return $this->layout;
-    }
+    public function setGroupLength($groupLength);
+
+    /**
+     * @param LayoutInterface $layout
+     */
+    public function setLayout(LayoutInterface $layout);
+
+    /**
+     * @param AnalysisCollection $collection
+     */
+    public function setAnalysisCollection(AnalysisCollection $collection);
+
+    /**
+     * @param ValidatorInterface $validator
+     */
+    public function setReferenceValidator(ValidatorInterface $validator);
+
+    /**
+     * @return BuilderInterface
+     */
+    public function create();
+
+    /**
+     * @return Graph
+     */
+    public function getGraph();
 }

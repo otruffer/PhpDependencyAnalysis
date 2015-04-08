@@ -2,7 +2,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Marco Muths
+ * Copyright (c) 2015 Marco Muths
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -176,5 +176,36 @@ class Adt
         $namespaceStrings[] = $this->getDeclaredNamespace()->toString();
 
         return $namespaceStrings;
+    }
+
+    /**
+     * @return array
+     */
+    public function toArray()
+    {
+        $meta = $this->getMeta()->toArray();
+        $meta['implementedNamespaces'] = $this->stringify($meta['implementedNamespaces']);
+        $meta['extendedNamespaces'] = $this->stringify($meta['extendedNamespaces']);
+        $meta['usedTraitNamespaces'] = $this->stringify($meta['usedTraitNamespaces']);
+
+        return array(
+            'meta'              => $meta,
+            'usedNamespaces'    => $this->stringify($this->getUsedNamespaces()),
+            'unsupportedStmts'  => $this->stringify($this->getUnsupportedStmts()),
+            'namespacedStrings' => $this->stringify($this->getNamespacedStrings()),
+        );
+    }
+
+    /**
+     * @param Node\Name[] $names
+     * @return array
+     */
+    private function stringify(array $names)
+    {
+        foreach ($names as $key => $name) {
+            $names[$key] = $name->toString();
+        }
+
+        return $names;
     }
 }

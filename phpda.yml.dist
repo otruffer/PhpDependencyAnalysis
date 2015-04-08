@@ -4,6 +4,7 @@ filePattern: '*.php'
 ignore: 'tests'
 formatter: 'PhpDA\Writer\Strategy\Svg'
 target: './phpda.svg'
+# referenceValidator: 'Fully\Qualified\Class\Name\To\ReferenceValidator'
 groupLength: 1
 visitor:
   - PhpDA\Parser\Visitor\TagCollector

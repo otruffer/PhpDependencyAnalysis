@@ -2,7 +2,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Marco Muths
+ * Copyright (c) 2015 Marco Muths
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -63,7 +63,10 @@ class UsedNamespaceCollectorTest extends \PHPUnit_Framework_TestCase
 
     public function testCollecting()
     {
+        $attributes = array('foo' => 'bar');
         $name = \Mockery::mock('PhpParser\Node\Name');
+        $name->shouldReceive('getAttributes')->once()->andReturn($attributes);
+        $name->shouldReceive('setAttribute')->once()->with('foo', 'bar');
         $this->nodeNameFilter->shouldReceive('filter')->once()->with($name)->andReturn($name);
         $this->adt->shouldReceive('addUsedNamespace')->once()->with($name);
 

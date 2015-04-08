@@ -2,7 +2,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Marco Muths
+ * Copyright (c) 2015 Marco Muths
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -36,7 +36,7 @@ class NamespacedStringCollector extends AbstractVisitor implements NamespacedStr
 
     public function leaveNode(Node $node)
     {
-        if ($node instanceof Node\Scalar\String) {
+        if ($node instanceof Node\Scalar\String_) {
             if ($this->match($node)) {
                 $namespace = self::NS . $this->trimNS($node->value);
                 $name = new Node\Name($namespace);
@@ -46,10 +46,10 @@ class NamespacedStringCollector extends AbstractVisitor implements NamespacedStr
     }
 
     /**
-     * @param Node\Scalar\String $string
+     * @param Node\Scalar\String_ $string
      * @return bool
      */
-    private function match(Node\Scalar\String $string)
+    private function match(Node\Scalar\String_ $string)
     {
         $string = $string->value;
 
